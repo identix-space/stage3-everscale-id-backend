@@ -1,0 +1,47 @@
+type Mutation {
+    """Just test backend available. Return provided text"""
+    echo(text: String!): String!
+
+    """Create new DID Document and return it address"""
+    createDidDocument(ownerPublicKey: String!) : String!
+
+    """Generate data to sign"""
+    loginGenerate(
+        """Decentralized ID, ex.: 978cae5ccb0048de4bf6c76ffba5c2686987fd72494137de8373a84e5f720063"""
+        did: String!
+    ): String!
+    """Auth method. Request for verify signed data"""
+    loginVerify(
+        """Decentralized ID, ex.: 978cae5ccb0048de4bf6c76ffba5c2686987fd72494137de8373a84e5f720063"""
+        did: String!
+        """Signed data by user's account"""
+        signatureHex: String!
+    ): AuthResult!
+    """Logout. Required providing actual token in headers"""
+    logout(
+        "List of sessions id. Don't pass for logout all sessions."
+        sessionIds: [Int!]
+    ): Boolean!
+
+    """Request for generate one-time message to sign by user's wallet"""
+    vcCreateProofOfTonAddressGenerate: String!
+    """Check user's wallet signature and create Verifiable Claim in success case"""
+    vcCreateProofOfTonAddressVerify(
+        """Signed data"""
+        signatureHex: String!
+        """Wallet address user's account"""
+        walletAddress: String!
+    ): VC!
+
+    vcCreateProofOfStateId: VC!
+    vcCreateProofOfTaxResidency: VC!
+    vcCreateProofOfEthAddress: VC!
+    vcCreateProofOfUniswapAccount: VC!
+    vcCreateProofOfTwitterAccount: VC!
+    vcCreateProofOfFunfairAccount: VC!
+}
+
+type GenerateEmailCodeResult {
+    result: Boolean!
+    expiresAt: Date!
+}

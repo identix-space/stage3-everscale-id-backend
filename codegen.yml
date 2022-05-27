@@ -1,0 +1,17 @@
+overwrite: true
+generates:
+    src/generated/graphql_api.ts:
+        schema:
+            - 'src/schema/*.graphql'
+        plugins:
+            -   add:
+                    content:
+                        - "/* eslint-disable */"
+                        - "// @ts-nocheck"
+                        - "import { GraphQLContext } from '../IContext';"
+            - "typescript"
+            - "typescript-resolvers"
+        config:
+            contextType: GraphQLContext
+            useIndexSignature: true
+            defaultMapper: Partial<{T}>

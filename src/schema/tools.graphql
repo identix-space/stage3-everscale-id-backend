@@ -1,0 +1,71 @@
+scalar Date
+scalar Json
+
+directive @cost(
+    multipliers: [String],
+    useMultipliers: Boolean,
+    complexity: CostComplexity
+) on OBJECT | FIELD_DEFINITION
+
+input CostComplexity {
+    min: Int = 1,
+    max: Int
+}
+
+"""Abstract declaration of every database object"""
+interface Node {
+    id: Int!
+    createdAt:  Date!
+    updatedAt:  Date!
+}
+
+"""Account (one DID = one account)"""
+type Account implements Node {
+    id: Int!
+    createdAt: Date!
+    updatedAt: Date!
+
+    """Decentralized ID, ex.: 978cae5ccb0048de4bf6c76ffba5c2686987fd72494137de8373a84e5f720063"""
+    did: String!
+    status: AccountStatus!
+
+    sessions: [AccountSession!]
+}
+
+type AuthResult {
+    account: Account!
+    token: String!
+}
+
+enum AccountStatus {
+    ACTIVE
+    DISABLED
+}
+
+type UserAgent {
+    ua: String
+    cpu: UserAgentCpu
+    os: UserAgentOs
+    engine: UserAgentEngine
+    browser: UserAgentBrowser
+}
+
+type UserAgentCpu {
+    architecture: String
+}
+
+type UserAgentOs {
+    name: String
+    version: String
+}
+
+type UserAgentEngine {
+    name: String
+    version: String
+}
+
+type UserAgentBrowser {
+    name: String
+    version: String
+    major: String
+}

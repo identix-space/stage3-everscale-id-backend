@@ -1,0 +1,98 @@
+type Query {
+    version: String
+    """Just test backend available. Return provided text"""
+    echo(text: String!): String!
+    """Request for getting account info by provided token in headers"""
+    whoami: Account!
+    """Request for getting account session info by provided token in headers"""
+    currentSession: AccountSession!
+
+    """Get Verifiable Claims template sections"""
+    vcTemplateSections: [VCTemplateSection!]
+
+    """Get services ex.: TON Swap"""
+    services(filter: ServicesFilter): [Service!]
+    """Get service by id"""
+    service(id: Int!): Service!
+    """Get Verifiable Claim template by id"""
+    vcTemplate(id: Int!): VCTemplate!
+}
+
+input ServicesFilter {
+    vcTemplateId: Int
+}
+
+"""Verifiable Claim Template section, that can contain many templates inside"""
+type VCTemplateSection implements Node {
+    id: Int!
+    createdAt:  Date!
+    updatedAt:  Date!
+
+    title: String!
+    vcTemplates: [VCTemplate!]
+}
+
+"""Verifiable Claim Template, ex.: PROOF_OF_TON_ADDRESS"""
+type VCTemplate implements Node {
+    id: Int!
+    createdAt:  Date!
+    updatedAt:  Date!
+
+    type: String!
+    title: String!
+    description: String!
+    issuer: String!
+
+    services: [Service!]
+    sections: [VCTemplateSection!]
+    vc: VC
+}
+
+"""Verifiable Claim"""
+type VC implements Node {
+    id: Int!
+    createdAt:  Date!
+    updatedAt:  Date!
+
+    owner: Account!
+    vcTemplate: VCTemplate!
+    value: Json!
+}
+
+"""Service that uses verifiable representation, ex.: TON Swap"""
+type Service implements Node {
+    id: Int!
+    createdAt:  Date!
+    updatedAt:  Date!
+
+    name: String!
+    logoUrl: String!
+    description: String!
+    pros: String!
+
+    vcTemplates: [VCTemplate!]
+}
+
+"""Account session for authenticate user"""
+type AccountSession implements Node {
+    id: Int!
+    createdAt:  Date!
+    updatedAt:  Date!
+
+    account:    Account!
+    ipAddr:     String!
+    address:    String
+    userAgent:  UserAgent
+    expiresAt:  Date!
+}
+
+"""Verifiable Claim template variants"""
+enum VCTemplateType {
+    PROOF_OF_TON_ADDRESS
+    PROOF_OF_STATE_ID
+    PROOF_OF_TAX_RESIDENCY
+    PROOF_OF_ETH_ADDRESS
+    PROOF_OF_UNISWAP_ACCOUNT
+    PROOF_OF_TWITTER_ACCOUNT
+    PROOF_OF_FUNFAIR_ACCOUNT
+}

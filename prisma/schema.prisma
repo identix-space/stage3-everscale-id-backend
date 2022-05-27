@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../data/data.sqlite3"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  did String @unique
+
+  status String @default("DISABLED")
+
+  sessions AccountSession[]
+  vcList   VC[]
+
+  oneTimeMessages OneTimeMessage[]
+}
+
+model VerifyMessage {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  did       String   @unique
+  message   String
+  expiresAt DateTime
+}
+
+model Upload {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  filename         String @unique
+  originalFilename String
+  extension        String
+  size             Int
+  mimetype         String
+
+  uploaderIp String
+}
+
+model AccountSession {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId Int
+
+  token     String   @unique
+  ipAddr    String
+  userAgent String?
+  expiresAt DateTime
+}
+
+model Service {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String @unique
+  logoUrl     String
+  description String
+  pros        String
+
+  vcTemplates VCTemplate[] @relation("VCTemplateService")
+}
+
+model VC {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner        Account    @relation(fields: [ownerId], references: [id])
+  ownerId      Int
+  vcTemplate   VCTemplate @relation(fields: [vcTemplateId], references: [id])
+  vcTemplateId Int
+
+  valueJson String
+}
+
+model VCTemplate {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type        String @unique
+  title       String
+  description String
+  issuer      String
+
+  services Service[]           @relation("VCTemplateService")
+  sections VCTemplateSection[] @relation("VCSection")
+
+  vcList VC[]
+}
+
+model VCTemplateSection {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title String @unique
+
+  vcTemplates VCTemplate[] @relation("VCSection")
+}
+
+model OneTimeMessage {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  message   String
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId Int     @unique
+}
